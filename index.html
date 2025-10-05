@@ -2,18 +2,26 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Controller Notif</title>
+<title>Notif Controller</title>
 <style>
-#status { font-weight:bold; color:red; }
-#status.connected { color:green; }
+  body{font-family:sans-serif;padding:20px;}
+  input, button{margin:5px; padding:5px;}
+  #status{font-weight:bold;color:red;}
+  #status.connected{color:green;}
+  .notif-group{margin-top:10px;border:1px solid #ccc;padding:10px;border-radius:5px;}
 </style>
 </head>
 <body>
 <h2>Controller Notif</h2>
-<p>Status koneksi Firebase: <span id="status">Offline</span></p>
-<input type="text" id="title" placeholder="Judul Notif">
-<input type="text" id="message" placeholder="Pesan Notif">
-<button onclick="sendNotif()">Kirim Notif</button>
+<p>Status Firebase: <span id="status">Offline</span></p>
+
+<div class="notif-group">
+  <input type="text" id="title" placeholder="Judul Notif">
+  <input type="text" id="message" placeholder="Pesan Notif">
+  <input type="text" id="icon" placeholder="URL Icon (optional)">
+  <input type="text" id="url" placeholder="URL Redirect (optional)">
+  <button onclick="sendNotif()">Kirim Notif</button>
+</div>
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-app.js";
@@ -31,31 +39,24 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
-
 const statusEl = document.getElementById('status');
-const connectedRef = ref(db, '.info/connected');
-onValue(connectedRef, (snap) => {
-  if(snap.val() === true){
-    statusEl.textContent = 'Connected';
-    statusEl.classList.add('connected');
-  } else {
-    statusEl.textContent = 'Offline';
-    statusEl.classList.remove('connected');
-  }
+
+onValue(ref(db,'.info/connected'), snap => {
+  if(snap.val()){statusEl.textContent='Connected';statusEl.classList.add('connected');}
+  else{statusEl.textContent='Offline';statusEl.classList.remove('connected');}
 });
 
 window.sendNotif = function(){
   const title = document.getElementById('title').value;
   const message = document.getElementById('message').value;
+  const icon = document.getElementById('icon').value;
+  const url = document.getElementById('url').value;
 
-  if(title && message){
-    push(ref(db, 'notifs'), {
-      title,
-      message,
-      timestamp: Date.now()
-    }).then(()=> alert('Notif dikirim!'))
-      .catch(err => alert('Error: '+err));
-  } else alert('Isi title & message lur!');
+  if(!title || !message){alert('Isi title & message lur!'); return;}
+
+  push(ref(db,'notifs'),{title,message,icon,url,timestamp:Date.now()})
+    .then(()=> alert('Notif dikirim!'))
+    .catch(err => alert('Error: '+err));
 }
 </script>
 </body>
