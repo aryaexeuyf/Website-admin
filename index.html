@@ -4,17 +4,15 @@
 <meta charset="UTF-8">
 <title>Controller Notif</title>
 <style>
-  #status { font-weight:bold; color:red; }
-  #status.connected { color:green; }
+#status { font-weight:bold; color:red; }
+#status.connected { color:green; }
 </style>
 </head>
 <body>
 <h2>Controller Notif</h2>
 <p>Status koneksi Firebase: <span id="status">Offline</span></p>
-
 <input type="text" id="title" placeholder="Judul Notif">
 <input type="text" id="message" placeholder="Pesan Notif">
-<input type="text" id="url" placeholder="URL Redirect">
 <button onclick="sendNotif()">Kirim Notif</button>
 
 <script type="module">
@@ -35,11 +33,9 @@ const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
 
 const statusEl = document.getElementById('status');
-
-// Indikator koneksi realtime
 const connectedRef = ref(db, '.info/connected');
 onValue(connectedRef, (snap) => {
-  if (snap.val() === true) {
+  if(snap.val() === true){
     statusEl.textContent = 'Connected';
     statusEl.classList.add('connected');
   } else {
@@ -48,22 +44,18 @@ onValue(connectedRef, (snap) => {
   }
 });
 
-window.sendNotif = function() {
+window.sendNotif = function(){
   const title = document.getElementById('title').value;
   const message = document.getElementById('message').value;
-  const url = document.getElementById('url').value;
 
-  if(title && message) {
+  if(title && message){
     push(ref(db, 'notifs'), {
       title,
       message,
-      url,
       timestamp: Date.now()
-    }).then(() => alert('Notif dikirim!'))
-      .catch(err => alert('Error: ' + err));
-  } else {
-    alert('Isi title & message lur!');
-  }
+    }).then(()=> alert('Notif dikirim!'))
+      .catch(err => alert('Error: '+err));
+  } else alert('Isi title & message lur!');
 }
 </script>
 </body>
