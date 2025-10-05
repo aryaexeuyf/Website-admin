@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Push Notif Controller</title>
+</head>
+<body>
+  <h2>Controller Notif</h2>
+  <input type="text" id="title" placeholder="Judul Notif">
+  <input type="text" id="message" placeholder="Pesan Notif">
+  <input type="text" id="url" placeholder="URL Redirect">
+  <button onclick="sendNotif()">Kirim Notif</button>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-app.js";
+    import { getDatabase, ref, push } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-database.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyBcVJsqtRLkDklZ61XaFrN8LAj7F6eBM80",
+      authDomain: "notif-webku.firebaseapp.com",
+      databaseURL: "https://notif-webku-default-rtdb.asia-southeast1.firebasedatabase.app",
+      projectId: "notif-webku",
+      storageBucket: "notif-webku.appspot.com",
+      messagingSenderId: "1064332196897",
+      appId: "1:1064332196897:web:f8a4423c1a187e8a51f760"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+
+    window.sendNotif = function() {
+      const title = document.getElementById('title').value;
+      const message = document.getElementById('message').value;
+      const url = document.getElementById('url').value;
+
+      if(title && message) {
+        push(ref(db, 'notifs'), {
+          title: title,
+          message: message,
+          url: url,
+          timestamp: Date.now()
+        });
+        alert('Notif dikirim!');
+      } else {
+        alert('Isi title & message dong lur!');
+      }
+    }
+  </script>
+</body>
+</html>
